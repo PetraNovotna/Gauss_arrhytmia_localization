@@ -2,7 +2,7 @@
 from shutil import copyfile, rmtree
 import os
 from config import Config
-import load_fncs as lf
+import utils.load_fncs as lf
 
 
 
@@ -30,17 +30,33 @@ for root, dirs, files in os.walk(Config.DATA_PATH):
 
 for k,file_name in enumerate(names):
 
-    lbl = lf.read_lbl(Config.DATA_PATH, file_name)
-    lbl = lbl[:-1]
+    file_name_full = Config.DATA_PATH + os.sep + file_name + '.mat' 
+    head,tail = os.path.split(file_name_full)
+    lbl_PAC,lbl_PVC = lf.read_lbl_pos(Config.lbls_path + os.sep + tail.replace('.mat','_position_labels.mat'))
+    
+    lbl = []
+    if len(lbl_PAC)>0:
+        lbl.append('PAC')
+    if len(lbl_PVC)>0:
+        lbl.append('PVC')
+        
 
     print(file_name)
     print(lbl)
     print(k)
 
-    for pato_name in Config.pato_names:
+    
+    if False:
 
-      if pato_name==lbl:
+        for pato_name in Config.pato_names:
+    
+          if pato_name==lbl:
+            copyfile(Config.DATA_PATH + os.sep +file_name +'.mat',Config.DATA_TMP_PATH + os.sep +file_name +'.mat')
+            copyfile(Config.DATA_PATH + os.sep +file_name + '.hea' ,Config.DATA_TMP_PATH + os.sep +file_name + '.hea')
+            print("saved")
+            
+            
+    else:
         copyfile(Config.DATA_PATH + os.sep +file_name +'.mat',Config.DATA_TMP_PATH + os.sep +file_name +'.mat')
         copyfile(Config.DATA_PATH + os.sep +file_name + '.hea' ,Config.DATA_TMP_PATH + os.sep +file_name + '.hea')
-        print("saved")
 
