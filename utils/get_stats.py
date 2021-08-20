@@ -1,31 +1,49 @@
 from torch.utils import data 
+from collections import namedtuple
 import numpy as np
+import os
+
 from config import Config
-from dataloader import Dataset
-from copy import deepcopy
+from utils.transforms import SnomedToOneHot
 
-def get_stats(file_names_list):
 
-    validation_generator = Dataset(file_names_list, 'valid')
-    validation_generator = data.DataLoader(validation_generator, batch_size=Config.valid_batch_size,
-                                           num_workers=Config.valid_num_workers, shuffle=False, drop_last=False,
-                                           collate_fn=Dataset.collate_fn)
+def get_stats(filenames, config):
+
+    snomedToOneHot = SnomedToOneHot()
     
+    names_onehot_lens = []
     
-    one_hots=[]
-    lenss=[]
-    for it,(pad_seqs, lens, lbls, file_names,detection) in enumerate(validation_generator):
-        print(it)
+    Data = namedtuple('Data','name onehot len')
+    
+    for name in filenames:
         
-        one_hots.append(deepcopy(lbls.detach().cpu().numpy()))
-        lenss.append(deepcopy(lens.detach().cpu().numpy()))
-        del lbls
-        del lens
-        del pad_seqs
-    
         
-    one_hots=np.concatenate(one_hots,axis=0)
-    lenss=np.concatenate(lenss,axis=0)
-    lbl_counts=np.sum(one_hots,0)
+        head, tail = os.path.split(name.replace('.npy',''))
+        _,abbs,len_ = tail.split('--')
+        
+        abbs = abbs.split('_')
+        
+        if config.pato_use:
+            if not len(set.intersection(set(abbs),set(config.pato_use)))>0:
+                continue
+                
+                
+                
+        
+        onehot = snomedToOneHot(abbs,Config.ABB2IDX_MAP).astype(np.int)
+        
+        onehot = onehot[[config.pato_all.index(pato) for pato in config.pato_use_for_prediction]]
+        
+        len_ = int(len_)
+        
+        names_onehot_lens.append(Data(name,onehot,len_))
     
-    return lbl_counts,lenss
+    return names_onehot_lens
+
+
+
+
+    
+    
+    
+    

@@ -11,10 +11,10 @@ class Log():
             
         
         self.train_log=dict(zip(names, [[]]*len(names)))
-        self.test_log=dict(zip(names, [[]]*len(names)))
+        self.valid_log=dict(zip(names, [[]]*len(names)))
         
         self.train_log_tmp=dict(zip(names, [[]]*len(names)))
-        self.test_log_tmp=dict(zip(names, [[]]*len(names)))
+        self.valid_log_tmp=dict(zip(names, [[]]*len(names)))
         
         self.opt_challange_metric_test=[]
         
@@ -24,9 +24,9 @@ class Log():
             self.train_log_tmp[name]=self.train_log_tmp[name] + [value]
         
         
-    def append_test(self,list_to_save):
+    def append_valid(self,list_to_save):
         for value,name in zip(list_to_save,self.names):
-            self.test_log_tmp[name]=self.test_log_tmp[name] + [value]
+            self.valid_log_tmp[name]=self.valid_log_tmp[name] + [value]
         
         
     def save_and_reset(self):
@@ -34,12 +34,12 @@ class Log():
         
         for name in self.names:
             self.train_log[name]= self.train_log[name] + [np.mean(self.train_log_tmp[name])]
-            self.test_log[name]= self.test_log[name] + [np.mean(self.test_log_tmp[name])]
+            self.valid_log[name]= self.valid_log[name] + [np.mean(self.valid_log_tmp[name])]
         
         
         
         self.train_log_tmp=dict(zip(self.names, [[]]*len(self.names)))
-        self.test_log_tmp=dict(zip(self.names, [[]]*len(self.names)))
+        self.valid_log_tmp=dict(zip(self.names, [[]]*len(self.names)))
         
         
         
@@ -52,7 +52,7 @@ class Log():
         for save_name in save_names:
             for name in self.names:
                 plt.plot( self.train_log[name], label = 'train')
-                plt.plot(self.test_log[name], label = 'test')
+                plt.plot(self.valid_log[name], label = 'test')
                 if ylim is not None:
                     plt.ylim(ylim)
                 plt.title(name)

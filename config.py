@@ -1,7 +1,5 @@
 import os
-from utils.losses import wce,mse
 import numpy as np
-import shutil
 
 class Config:
     
@@ -9,92 +7,87 @@ class Config:
 
     model_save_dir = "../tmp"
 
-    DATA_PATH = "../data_ke_clanku/Training_WFDB"
+    DATA_PATH = "../data/Training_WFDB"
     
-    lbls_path='../data_ke_clanku/output_labeled'
+    lbls_path='../data/output_labeled'
     
 
-
-    is_mil=1  #########nastavovat 
-    
     mil_solution = 'max'
     
-    gaussian_sigma = 100  #########nastavovat - vybrat nejlepší
+    gaussian_sigma = 30   
+    # gaussian_sigma = 'mil'
     
     
     # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
-    # DATA_TMP_PATH = "../Training_WFDB_filtered"
-
-    pato_names = ['Normal', 'PVC', 'PAC']
-    DATA_TMP_PATH = "../data_ke_clanku/Training_WFDB_filtered_2"
+    
+    # pato_use = ['Normal', 'PVC', 'PAC'] 
+    pato_use = ['Normal', 'PVC'] 
+    # pato_use = ['Normal', 'PAC'] 
+    # pato_use = None
+    
+    
+    pato_use_for_prediction = ['PAC','PVC']
+    
+    
+    # pato_use_for_prediction_real = ['PAC','PVC']
+    pato_use_for_prediction_real = ['PVC']
     
     
     
     
-    if is_mil:
-        res_dir='../res_MIL' + '_' + mil_solution
-    else:
-        res_dir='../res_detection_gausian' + str(gaussian_sigma)
+    
+    DATA_TMP_PATH = "../data/data_resave"
+    
+    Fs = 150
+    
+    MODELS_SEED = 42
+    SPLIT_RATIO = [7,1,2]
+    
+    
+    res_dir='../res_detection_gausian' + str(gaussian_sigma)
         
 
-    try:
-        os.mkdir(DATA_TMP_PATH)
-    except:
-        pass
+    pato_all = ['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
     
-    
-    try:
-        shutil.rmtree(res_dir)
-    except:
-        pass
-    
-    
-    
-    try:
-        os.mkdir(res_dir)
-    except:
-        pass
-    
-    try:
-        os.mkdir(model_save_dir)
-    except:
-        pass
-
+ 
+    ABB2IDX_MAP = {key: idx for idx, key in enumerate(pato_all)}
   
 
+    train_batch_size = 8
+    valid_batch_size = 8
 
-
-    train_batch_size = 32
-    valid_batch_size = 32
+    # train_batch_size = 32
+    # valid_batch_size = 32
     
+    valid_num_workers = 6
+    train_num_workers = 6
+
     valid_num_workers = 0
     train_num_workers = 0
 
-
     
     LR_LIST=np.array([0.001,0.0001,0.00001])
-    LR_CHANGES_LIST=[60,30,15]
-    if is_mil:
-        LOSS_FUNTIONS=[wce,wce,wce]
-    else:
-        LOSS_FUNTIONS=[mse,mse,mse]
+    # LR_CHANGES_LIST=[60,30,15]
+    LR_CHANGES_LIST=[10,5,2]
+        
+        
     max_epochs=np.sum(LR_CHANGES_LIST)
-    
-    
-    SPLIT_RATIO = [8, 2]
+
 
     model_note = 'test1'
 
 
 
     ## network setting
-    levels = 6
-    lvl1_size = 6
+    levels = 4
+    lvl1_size = 8
+    # lvl1_size = 32
     input_size = 12
     output_size = 2
+    # convs_in_layer = 5
     convs_in_layer = 2
     init_conv = lvl1_size
-    filter_size = 5
-
+    # filter_size = 5
+    filter_size = 3
 
 

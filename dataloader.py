@@ -2,50 +2,47 @@ from torch.utils import data
 import numpy as np
 import torch
 from config import Config
-import utils.load_fncs as lf
 import os
 import matplotlib.pyplot as plt
+import json
 from scipy.ndimage import gaussian_filter
 
 
 class Dataset(data.Dataset):
 
-    def __init__(self, data_names, split):
+    def __init__(self, names_onehot_lens, split, config):
         """Initialization"""
-        self.data_names = data_names
+        self.names_onehot_lens = names_onehot_lens
         self.split = split
-        self.pato_names = Config.pato_names
+        self.config = config
 
     def __len__(self):
         """Return total number of data samples"""
-        return len(self.data_names)
+        return len(self.names_onehot_lens)
 
     def __getitem__(self, idx):
         """Generate data sample"""
         # Select sample
-        file_name = self.data_names[idx]
+        name_onehot_len = self.names_onehot_lens[idx]
 
         # Read data and get label
-        X = lf.read_data(file_name)
+        X = np.load(name_onehot_len.name)
             
         sig_len = X.shape[1]
         signal_num = X.shape[0]
         
 
+        y  = name_onehot_len.onehot
         
+        
+        file_name = name_onehot_len.name
+    
 
-        head,tail = os.path.split(file_name)
-        lbl_file_name=Config.lbls_path + os.sep + tail.replace('.mat','_position_labels.mat')
-        lbl_PAC,lbl_PVC = lf.read_lbl_pos(lbl_file_name)
+        with open(name_onehot_len.name.replace('.npy','.json'), 'r') as file:
+            positions_resampled = json.load( file)
 
-
-        y  = np.zeros(2,dtype = np.float32)
-        if len(lbl_PAC)>0:
-            y[0] = 1
-        if len(lbl_PVC)>0:
-            y[1] = 1
-
-
+        lbl_PAC = np.array(positions_resampled['PAC']).astype(np.int)
+        lbl_PVC = np.array(positions_resampled['PVC']).astype(np.int)
 
         Y_PAC=np.zeros((sig_len))
         
@@ -67,13 +64,7 @@ class Dataset(data.Dataset):
         Y = np.concatenate((Y_PAC,Y_PVC),axis = 0)
         lbl_num = Y.shape[0]
         
-        if Y.shape[0] ==1:
-            pass
-        
 
-        
-        ## normalization
-        X = X  / 200
 
 
         ##augmentation
@@ -85,14 +76,6 @@ class Dataset(data.Dataset):
                 X = np.roll(X, shift, axis=1)
                 Y = np.roll(Y, shift, axis=1)
 
-            # # ranzomly inserted zeros
-            # if torch.rand(1).numpy()[0] > 0.3:
-
-            #     rand_pos = int(torch.randint(sig_len, (1, 1)).view(-1).numpy())
-            #     if sig_len - rand_pos > 1000:
-            #         X[:, rand_pos:rand_pos + 1000] = 0
-            #     else:
-            #         X[:, rand_pos:] = 0
 
             ## random stretch -
             if torch.rand(1).numpy()[0] > 0.3:
