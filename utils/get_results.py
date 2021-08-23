@@ -63,6 +63,6 @@ def get_results(lbls,detetions):
     acc=np.mean(np.array([len(x)>0 for x in detetions])==np.array([len(x)>0 for x in lbls]))
     
     
-    return recall, precision, dice, acc
+    return recall, precision, dice, acc, TP, FP, FN
     
     

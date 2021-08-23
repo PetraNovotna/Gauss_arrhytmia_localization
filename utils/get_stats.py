@@ -12,7 +12,6 @@ def get_stats(filenames, config):
     
     names_onehot_lens = []
     
-    Data = namedtuple('Data','name onehot len')
     
     for name in filenames:
         
@@ -35,7 +34,9 @@ def get_stats(filenames, config):
         
         len_ = int(len_)
         
-        names_onehot_lens.append(Data(name,onehot,len_))
+        
+        
+        names_onehot_lens.append((name,onehot,len_))
     
     return names_onehot_lens
 

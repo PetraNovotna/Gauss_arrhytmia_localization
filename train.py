@@ -39,7 +39,7 @@ def train(config):
     
     
     num_of_sigs = len(names_onehot_lens_train)
-    lbl_counts = sum(map(lambda x: x.onehot,names_onehot_lens_train))
+    lbl_counts = sum(map(lambda x: x[1],names_onehot_lens_train))
     w_positive = num_of_sigs / lbl_counts
     w_negative = num_of_sigs / (num_of_sigs - lbl_counts)
     w_positive_tensor = torch.from_numpy(w_positive.astype(np.float32)).to(device)
@@ -69,9 +69,9 @@ def train(config):
     model = model.to(device)
     
     
-    names_train = [item.name for item in names_onehot_lens_train]
-    names_valid = [item.name for item in names_onehot_lens_valid]
-    names_test = [item.name for item in names_onehot_lens_test]
+    names_train = [item[0] for item in names_onehot_lens_train]
+    names_valid = [item[0] for item in names_onehot_lens_valid]
+    names_test = [item[0] for item in names_onehot_lens_test]
     
     model.names_train = names_train
     model.names_valid = names_valid
@@ -88,6 +88,10 @@ def train(config):
     scheduler=AdjustLearningRateAndLoss(optimizer,config.LR_LIST,config.LR_CHANGES_LIST,[None,None,None,None,None])
 
 
+    ind_pato = [config.pato_use_for_prediction.index(x) for x in config.pato_use_for_prediction_real]
+    w_positive_tensor = w_positive_tensor[ind_pato]
+    w_negative_tensor = w_negative_tensor[ind_pato]
+
     ## create empty log - object to save training results
     log = Log(['loss'])
 
@@ -102,11 +106,9 @@ def train(config):
                 print(str(it) + '/' + str(N))
                 
                 
-            ind_pato = [config.pato_use_for_prediction.index(x) for x in config.pato_use_for_prediction_real]
+            
             lbls = lbls[:,ind_pato] 
             detection = detection[:,ind_pato,:] 
-            w_positive_tensor = w_positive_tensor[ind_pato]
-            w_negative_tensor = w_positive_tensor[ind_pato]
 
                 
             ## send data to graphic card
@@ -146,11 +148,8 @@ def train(config):
                 if it%20==0:
                     print(str(it) + '/' + str(N))
                 
-                ind_pato = [config.pato_use_for_prediction.index(x) for x in config.pato_use_for_prediction_real]
                 lbls = lbls[:,ind_pato] 
                 detection = detection[:,ind_pato,:] 
-                w_positive_tensor = w_positive_tensor[ind_pato]
-                w_negative_tensor = w_positive_tensor[ind_pato]
                 
                 
                 pad_seqs, lens, lbls,detection  = pad_seqs.to(device), lens.to(device), lbls.to(device), detection.to(device)
@@ -224,10 +223,11 @@ def train(config):
     final_model_name = '../finalmodel_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.pt'
     copyfile(best_model_name, final_model_name)
     
-    recall, precision, dice, acc = evaluate(model)
+    recall, precision, dice, acc, TP, FP, FN = evaluate(model)
     
     
-    tmp = {'recall_' +  '-'.join(config.pato_use_for_prediction_real) :recall, 'precision':precision, 'dice':dice, 'acc':acc, 'final_model_name':final_model_name}
+    tmp = {'recall_' +  '-'.join(config.pato_use_for_prediction_real) :recall, 'precision':precision, 'dice':dice,
+           'acc':acc, 'TP':TP, 'FP':FP, 'FN':FN, 'final_model_name':final_model_name}
 
     with open('../results_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.json', 'w') as outfile:
         json.dump(tmp, outfile)

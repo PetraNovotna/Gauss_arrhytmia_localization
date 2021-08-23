@@ -118,51 +118,64 @@ def evaluate(model):
     
     
     
+    recall, precision, dice, acc, TP, FP, FN = [], [], [] ,[], [], [] ,[]
     
-    def func(all_results=False,**params):
+    for heatmap_ind in range(len(heatmaps)):
+    
         
-        recall, precision, dice, acc = [], [], [] ,[]
-        for heatmap_ind in range(len(heatmaps)):
+        def func(all_results=False,**params):
             
             detections_tmp = get_peaks(heatmaps[heatmap_ind],params['height'],params['distance'],params['prominence'])
             
-            recall_tmp, precision_tmp, dice_tmp, acc_tmp = get_results(gt_detections[heatmap_ind],detections_tmp)
+            recall, precision, dice, acc, TP, FP, FN = get_results(gt_detections[heatmap_ind],detections_tmp)
+                
+                
             
-            
-            recall.append(recall_tmp)
-            precision.append(precision_tmp)
-            dice.append(dice_tmp) 
-            acc.append(acc_tmp)
-            
+            if all_results:
+                return recall, precision, dice, acc, TP, FP, FN
+            else :
+                return dice
         
-        if all_results:
-            return recall, precision, dice, acc
-        else :
-            return np.mean(dice)
+        
+        
+        
+        
+        pbounds = {'height':[height_min,height_max],'distance':[1,4*config.Fs],'prominence':[0,height_max-height_min]}
     
-    
-    
-    pbounds = {'height':[height_min,height_max],'distance':[1,4*config.Fs],'prominence':[0,height_max-height_min]}
-
-    optimizer = BayesianOptimization(f=func,pbounds=pbounds,random_state=1)  
-    
-    # optimizer.maximize(init_points=200,n_iter=200)
-    optimizer.maximize(init_points=200,n_iter=20)
-    
-    print(optimizer.max)
-    
-    params=optimizer.max['params']
-    
-    
-    recall, precision, dice, acc = func(all_results=True,**params)
+        optimizer = BayesianOptimization(f=func,pbounds=pbounds,random_state=1)  
+        
+        
+        # optimizer.maximize(init_points=200,n_iter=200)
+        optimizer.maximize(init_points=200,n_iter=100)
+        
+        print(optimizer.max)
+        
+        params=optimizer.max['params']
+        
+        
+        recall_tmp, precision_tmp, dice_tmp, acc_tmp, TP_tmp, FP_tmp, FN_tmp = func(all_results=True,**params)
+        
+        recall.append(recall_tmp)
+        precision.append(precision_tmp)
+        dice.append(dice_tmp) 
+        acc.append(acc_tmp)
+        TP.append(TP_tmp)
+        FP.append(FP_tmp)
+        FN.append(FN_tmp)
+        
+        
+        
     
     print('recall ' + str(recall))
     print('precision ' + str(precision))
     print('dice ' + str(dice))
     print('acc ' + str(acc))
+    print('TP ' + str(TP))
+    print('FP ' + str(FP))
+    print('FN ' + str(FN))
     
     
-    return recall, precision, dice, acc
+    return recall, precision, dice, acc, TP, FP, FN
 
 
 
@@ -172,7 +185,10 @@ if __name__ == "__main__":
 
     model = torch.load('../finalmodel_Normal-PVC-PAC_PAC-PVC_30.pt',map_location=device)
 
-    recall, precision, dice, acc = evaluate(model)
+    recall, precision, dice, acc, TP, FP, FN = evaluate(model)
+    
+    
+    
     
     
     

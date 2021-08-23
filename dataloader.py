@@ -25,20 +25,27 @@ class Dataset(data.Dataset):
         name_onehot_len = self.names_onehot_lens[idx]
 
         # Read data and get label
-        X = np.load(name_onehot_len.name)
+        X = np.load(name_onehot_len[0])
             
         sig_len = X.shape[1]
         signal_num = X.shape[0]
         
 
-        y  = name_onehot_len.onehot
+        y  = name_onehot_len[1]
         
         
-        file_name = name_onehot_len.name
+        file_name = name_onehot_len[0]
     
 
-        with open(name_onehot_len.name.replace('.npy','.json'), 'r') as file:
+        with open(name_onehot_len[0].replace('.npy','.json'), 'r') as file:
             positions_resampled = json.load( file)
+
+
+        if self.config.gaussian_sigma == 'mil':
+            gs = 30
+        else:
+            gs = self.config.gaussian_sigma
+
 
         lbl_PAC = np.array(positions_resampled['PAC']).astype(np.int)
         lbl_PVC = np.array(positions_resampled['PVC']).astype(np.int)
@@ -47,7 +54,7 @@ class Dataset(data.Dataset):
         
         Y_PAC[lbl_PAC]=1
         
-        Y_PAC = gaussian_filter(Y_PAC,self.config.gaussian_sigma,mode='constant')/(1/(self.config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PAC = gaussian_filter(Y_PAC,gs,mode='constant')/(1/(gs*np.sqrt(2*np.pi)))
         Y_PAC = Y_PAC.reshape((1,len(Y_PAC))).astype(np.float32)
         
         
@@ -56,7 +63,7 @@ class Dataset(data.Dataset):
         
         Y_PVC[lbl_PVC]=1
         
-        Y_PVC = gaussian_filter(Y_PVC,self.config.gaussian_sigma,mode='constant')/(1/(self.config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PVC = gaussian_filter(Y_PVC,gs,mode='constant')/(1/(gs*np.sqrt(2*np.pi)))
         Y_PVC = Y_PVC.reshape((1,len(Y_PVC))).astype(np.float32)
         
         
