@@ -220,7 +220,7 @@ def train(config):
     best_model_name=log.model_names[np.argmax(log.valid_log['loss'])]
         
     
-    final_model_name = '../finalmodel_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.pt'
+    final_model_name = config.results_dir + '/finalmodel_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.pt'
     copyfile(best_model_name, final_model_name)
     
     recall, precision, dice, acc, TP, FP, FN = evaluate(model)
@@ -229,7 +229,7 @@ def train(config):
     tmp = {'recall_' +  '-'.join(config.pato_use_for_prediction_real) :recall, 'precision':precision, 'dice':dice,
            'acc':acc, 'TP':TP, 'FP':FP, 'FN':FN, 'final_model_name':final_model_name}
 
-    with open('../results_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.json', 'w') as outfile:
+    with open(config.results_dir + '/results_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.json', 'w') as outfile:
         json.dump(tmp, outfile)
     
     

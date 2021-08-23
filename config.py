@@ -5,15 +5,15 @@ class Config:
     
 
     model_save_dir = "../tmp"
-
+    results_dir = '..'
 
 
     if os.path.isdir('../data'):
         DATA_PATH = "../data/Training_WFDB"
         lbls_path='../data/output_labeled'
     elif os.path.isdir('../../cinc2021_petka_data'):
-        DATA_PATH = "../../cinc2021_petka_data/Training_WFDB"
-        lbls_path='../../cinc2021_petka_data/output_labeled'
+        DATA_PATH = "../../cinc2021_petka_data/data/Training_WFDB"
+        lbls_path='../../cinc2021_petka_data/data/output_labeled'
     else:
         raise Exception('no data')
         
