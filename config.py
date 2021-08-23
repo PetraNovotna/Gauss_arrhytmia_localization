@@ -7,9 +7,17 @@ class Config:
 
     model_save_dir = "../tmp"
 
-    DATA_PATH = "../data/Training_WFDB"
-    
-    lbls_path='../data/output_labeled'
+
+
+    if os.path.isdir('../data'):
+        DATA_PATH = "../data/Training_WFDB"
+        lbls_path='../data/output_labeled'
+    elif os.path.isdir('../../cinc2021_petka_data'):
+        DATA_PATH = "../../cinc2021_petka_data/Training_WFDB"
+        lbls_path='../../cinc2021_petka_data/output_labeled'
+    else:
+        raise Exception('no data')
+        
     
 
     mil_solution = 'max'
@@ -18,7 +26,6 @@ class Config:
     # gaussian_sigma = 'mil'
     
     
-    # pato_names=['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
     
     # pato_use = ['Normal', 'PVC', 'PAC'] 
     pato_use = ['Normal', 'PVC'] 
@@ -26,13 +33,10 @@ class Config:
     # pato_use = None
     
     
-    pato_use_for_prediction = ['PAC','PVC']
-    
     
     # pato_use_for_prediction_real = ['PAC','PVC']
     pato_use_for_prediction_real = ['PVC']
-    
-    
+    # pato_use_for_prediction_real = ['PAC']
     
     
     
@@ -48,6 +52,7 @@ class Config:
         
 
     pato_all = ['Normal','AF','I-AVB','LBBB','RBBB','PAC','PVC','STD','STE']
+    pato_use_for_prediction = ['PAC','PVC']
     
  
     ABB2IDX_MAP = {key: idx for idx, key in enumerate(pato_all)}
@@ -74,7 +79,7 @@ class Config:
     max_epochs=np.sum(LR_CHANGES_LIST)
 
 
-    model_note = 'test1'
+    model_note = 'xxx'
 
 
 

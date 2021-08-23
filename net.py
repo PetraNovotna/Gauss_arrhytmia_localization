@@ -64,12 +64,12 @@ class Net_addition_grow(nn.Module):
                 self.layers.append(
                     myConv(int(lvl1_size * (lvl_num + 1)), int(lvl1_size * (lvl_num + 1)), filter_size=filter_size))
 
-        self.conv_final = nn.Conv1d(int(lvl1_size * (self.levels)) + int(lvl1_size * (self.levels)) + init_conv, 1, 3,
+        self.conv_final = nn.Conv1d(int(lvl1_size * (self.levels)) + int(lvl1_size * (self.levels)) + init_conv, self.output_size, 3,
                                     1, 1)
 
         ## weigths initialization wih xavier method
         for i, m in enumerate(self.modules()):
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, nn.Conv1d):
                 init.xavier_normal_(m.weight)
                 init.constant_(m.bias, 0)
 
@@ -161,7 +161,8 @@ class Net_addition_grow(nn.Module):
         else:
             print('error mil solution')
         
-
+        lens = lens.repeat(1,list(x.size())[1])
+        
         help_lens = lens.view(list(x.size()))
 
         x = (x * help_mult) / help_lens

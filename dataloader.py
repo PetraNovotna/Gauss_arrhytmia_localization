@@ -1,7 +1,6 @@
 from torch.utils import data
 import numpy as np
 import torch
-from config import Config
 import os
 import matplotlib.pyplot as plt
 import json
@@ -48,7 +47,7 @@ class Dataset(data.Dataset):
         
         Y_PAC[lbl_PAC]=1
         
-        Y_PAC = gaussian_filter(Y_PAC,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PAC = gaussian_filter(Y_PAC,self.config.gaussian_sigma,mode='constant')/(1/(self.config.gaussian_sigma*np.sqrt(2*np.pi)))
         Y_PAC = Y_PAC.reshape((1,len(Y_PAC))).astype(np.float32)
         
         
@@ -57,7 +56,7 @@ class Dataset(data.Dataset):
         
         Y_PVC[lbl_PVC]=1
         
-        Y_PVC = gaussian_filter(Y_PVC,Config.gaussian_sigma,mode='constant')/(1/(Config.gaussian_sigma*np.sqrt(2*np.pi)))
+        Y_PVC = gaussian_filter(Y_PVC,self.config.gaussian_sigma,mode='constant')/(1/(self.config.gaussian_sigma*np.sqrt(2*np.pi)))
         Y_PVC = Y_PVC.reshape((1,len(Y_PVC))).astype(np.float32)
         
         

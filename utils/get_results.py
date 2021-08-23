@@ -5,7 +5,7 @@ import numpy as np
 def get_results(lbls,detetions):
     
     
-    dist_t=250
+    dist_t = 100
     
     TP=0
     FP=0

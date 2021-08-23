@@ -3,7 +3,6 @@ from collections import namedtuple
 import numpy as np
 import os
 
-from config import Config
 from utils.transforms import SnomedToOneHot
 
 
@@ -30,7 +29,7 @@ def get_stats(filenames, config):
                 
                 
         
-        onehot = snomedToOneHot(abbs,Config.ABB2IDX_MAP).astype(np.int)
+        onehot = snomedToOneHot(abbs,config.ABB2IDX_MAP).astype(np.int)
         
         onehot = onehot[[config.pato_all.index(pato) for pato in config.pato_use_for_prediction]]
         
