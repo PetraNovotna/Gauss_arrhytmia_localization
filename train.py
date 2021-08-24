@@ -63,7 +63,7 @@ def train(config):
     model = net.Net_addition_grow(levels=config.levels, lvl1_size=config.lvl1_size, input_size=config.input_size,
                               output_size=len(config.pato_use_for_prediction_real),
                               convs_in_layer=config.convs_in_layer, init_conv=config.init_conv,
-                              filter_size=config.filter_size,mil_solution=config.mil_solution)
+                              filter_size=config.filter_size,mil_solution=config.mil_solution,blocks_in_lvl=config.blocks_in_lvl)
 
 
     model = model.to(device)
@@ -190,9 +190,7 @@ def train(config):
         plt.show()
         
         plt.plot(detection_subsampled[0,0,:int(np.floor(lens.detach().cpu().numpy()[0]/(2**config.levels)))])
-        plt.ylim(-0.05,1)
-        if not config.gaussian_sigma == 'mil':
-            plt.title('gt')
+        plt.title('gt')
         plt.show()
         
         
@@ -217,19 +215,25 @@ def train(config):
         scheduler.step()
         
         
-    best_model_name=log.model_names[np.argmax(log.valid_log['loss'])]
-        
+    # best_model_name=log.model_names[np.argmax(log.valid_log['loss'])]
+    best_model_name=log.model_names[-1]  
     
-    final_model_name = config.results_dir + '/finalmodel_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.pt'
+    tmp_name = '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) + '_' + config.mil_solution
+    
+    final_model_name = config.results_dir + '/finalmodel_' + tmp_name +  '.pt'
     copyfile(best_model_name, final_model_name)
     
-    recall, precision, dice, acc, TP, FP, FN = evaluate(model)
+    
+    res_dir =  config.results_dir + '/results_' + tmp_name
+    recall, precision, dice, acc, TP, FP, FN, params = evaluate(model,res_dir)
+    
+    
     
     
     tmp = {'recall_' +  '-'.join(config.pato_use_for_prediction_real) :recall, 'precision':precision, 'dice':dice,
-           'acc':acc, 'TP':TP, 'FP':FP, 'FN':FN, 'final_model_name':final_model_name}
+           'acc':acc, 'TP':TP, 'FP':FP, 'FN':FN, 'final_model_name':final_model_name, 'params':params}
 
-    with open(config.results_dir + '/results_' + '-'.join(config.pato_use) + '_' + '-'.join(config.pato_use_for_prediction_real) + '_' + str(config.gaussian_sigma) +  '.json', 'w') as outfile:
+    with open(config.results_dir + '/results_' + tmp_name +  '.json', 'w') as outfile:
         json.dump(tmp, outfile)
     
     

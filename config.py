@@ -20,11 +20,30 @@ class Config:
     
 
     mil_solution = 'max'
+    # mil_solution = 'att2'
     
-    gaussian_sigma = 30   
-    # gaussian_sigma = 'mil'
+    # gaussian_sigma = 30   
+    gaussian_sigma = 'mil'
     
     
+    # if gaussian_sigma == 'max':
+    #     mil_solution = 'max'
+    #     gaussian_sigma = 'mil'
+    # if gaussian_sigma == 'att1-nolenmul':
+    #     mil_solution = 'att1-nolenmul'
+    #     gaussian_sigma = 'mil' 
+    # if gaussian_sigma == 'att2-nolenmul':
+    #     mil_solution = 'att2-nolenmul'
+    #     gaussian_sigma = 'mil'
+    # if gaussian_sigma == 'att1-lenmul':
+    #     mil_solution = 'att1-lenmul'
+    #     gaussian_sigma = 'mil' 
+    # if gaussian_sigma == 'att2-lenmul':
+    #     mil_solution = 'att2-lenmul'
+    #     gaussian_sigma = 'mil'
+    
+
+        
     
     pato_use = ['Normal', 'PVC', 'PAC'] 
     # pato_use = ['Normal', 'PVC']
@@ -78,7 +97,7 @@ class Config:
     max_epochs=np.sum(LR_CHANGES_LIST)
 
 
-    model_note = 'xxx'
+    model_note = 'x'
 
 
 
@@ -88,10 +107,11 @@ class Config:
     lvl1_size = 32
     input_size = 12
     output_size = 2
-    convs_in_layer = 5
-    # convs_in_layer = 2
+    # convs_in_layer = 5
+    convs_in_layer = 2
     init_conv = lvl1_size
     filter_size = 5
     # filter_size = 3
+    blocks_in_lvl = 4
 
 

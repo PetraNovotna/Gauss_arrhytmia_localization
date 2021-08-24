@@ -9,11 +9,12 @@ from scipy.ndimage import gaussian_filter
 
 class Dataset(data.Dataset):
 
-    def __init__(self, names_onehot_lens, split, config):
+    def __init__(self, names_onehot_lens, split, config, get_positions=False):
         """Initialization"""
         self.names_onehot_lens = names_onehot_lens
         self.split = split
         self.config = config
+        self.get_positions = get_positions
 
     def __len__(self):
         """Return total number of data samples"""
@@ -123,8 +124,12 @@ class Dataset(data.Dataset):
                     X[k, :] = X[k, :] * mult_change
 
 
-
-        return X, y,file_name,Y
+        if self.get_positions:
+            return X, y,file_name,Y, positions_resampled
+        else:
+            return X, y,file_name,Y
+    
+    
 
     def collate_fn(data):
         ## this take list of samples and put them into batch
@@ -133,7 +138,10 @@ class Dataset(data.Dataset):
         pad_val = 0
 
         ## get list of singals and its lengths
-        seqs, lbls, file_names,lbls_seqs = zip(*data)
+        if len(data[0])==4:
+            seqs, lbls, file_names,lbls_seqs = zip(*data)
+        else:
+            seqs, lbls, file_names,lbls_seqs, positions = zip(*data)
 
         lens = [seq.shape[1] for seq in seqs]
 
@@ -159,7 +167,10 @@ class Dataset(data.Dataset):
         lens = torch.from_numpy(lens)
         padded_lbls_seqs = torch.from_numpy(padded_lbls_seqs)
 
-        return padded_seqs, lens, lbls,file_names,padded_lbls_seqs
+        if len(data[0])==4:
+            return padded_seqs, lens, lbls,file_names,padded_lbls_seqs
+        else:
+            return padded_seqs, lens, lbls,file_names,padded_lbls_seqs,positions
 
 
 def main():

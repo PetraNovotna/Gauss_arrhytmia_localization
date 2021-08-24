@@ -34,7 +34,6 @@ if __name__ == "__main__":
             
      
         if k == 0:
-        
             config.pato_use = ['Normal', 'PVC', 'PAC'] 
             config.pato_use_for_prediction_real = ['PAC','PVC']
         
@@ -73,8 +72,6 @@ if __name__ == "__main__":
             raise Exception('no settings')
         
         
-        
-        
         if not os.path.isdir(config.DATA_TMP_PATH):
             os.makedirs(config.DATA_TMP_PATH)
             
@@ -86,12 +83,26 @@ if __name__ == "__main__":
         
         
         
-        for gaussian_sigma in [20,30,40,50,60,70,80,90,'mil']:
+        for gaussian_sigma in [20,30,40,'max','att1-nolenmul','att2-nolenmul','att1-lenmul','att2-lenmul']:
             
-        # for gaussian_sigma in ['mil']:   
-        
             config.gaussian_sigma = gaussian_sigma   
+            config.mil_solution = 'xxx'
             
+            if config.gaussian_sigma == 'max':
+                config.mil_solution = 'max'
+                config.gaussian_sigma = 'mil'
+            if config.gaussian_sigma == 'att1-nolenmul':
+                config.mil_solution = 'att1-nolenmul'
+                config.gaussian_sigma = 'mil' 
+            if config.gaussian_sigma == 'att2-nolenmul':
+                config.mil_solution = 'att2-nolenmul'
+                config.gaussian_sigma = 'mil'
+            if config.gaussian_sigma == 'att1-lenmul':
+                config.mil_solution = 'att1-lenmul'
+                config.gaussian_sigma = 'mil' 
+            if config.gaussian_sigma == 'att2-lenmul':
+                config.mil_solution = 'att2-lenmul'
+                config.gaussian_sigma = 'mil'
             
             train(config)
 
