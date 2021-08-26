@@ -203,6 +203,10 @@ def evaluate(model,res_dir):
             plt.savefig(name + '_signal.png') 
             # plt.show()
             plt.close()
+            tmp = signals[file_num][0,:]
+            np.save(name + '_signal.npy',tmp)
+            
+            
             
     
             plt.plot(heatmaps[ind_pato][file_num])
@@ -214,6 +218,9 @@ def evaluate(model,res_dir):
             plt.savefig(name + '_result.png') 
             # plt.show()
             plt.close()
+            tmp = heatmaps[ind_pato][file_num]
+            np.save(name + '_result.npy',tmp)
+            
             
             plt.plot(detection_gts_tmp[ind_pato][file_num])
             if len(detections_tmp)>0:
@@ -222,7 +229,8 @@ def evaluate(model,res_dir):
             plt.savefig(name + '_gt_detection.png') 
             # plt.show()
             plt.close()
-    
+            tmp = detection_gts_tmp[ind_pato][file_num]
+            np.save(name + '_gt_detection.npy',tmp)
     
     
     print('recall ' + str(recall))

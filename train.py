@@ -51,13 +51,13 @@ def train(config):
 
     training_generator = Dataset(names_onehot_lens_train, 'train', config)
     training_generator = data.DataLoader(training_generator, batch_size=config.train_batch_size,
-                                         num_workers=config.train_num_workers, shuffle=True, drop_last=True,
-                                         collate_fn=Dataset.collate_fn)
+                                          num_workers=config.train_num_workers, shuffle=True, drop_last=True,
+                                          collate_fn=Dataset.collate_fn)
 
     validation_generator = Dataset(names_onehot_lens_valid, 'valid', config)
     validation_generator = data.DataLoader(validation_generator, batch_size=config.valid_batch_size,
-                                           num_workers=config.valid_num_workers, shuffle=True, drop_last=False,
-                                           collate_fn=Dataset.collate_fn)
+                                            num_workers=config.valid_num_workers, shuffle=True, drop_last=False,
+                                            collate_fn=Dataset.collate_fn)
 
 
     model = net.Net_addition_grow(levels=config.levels, lvl1_size=config.lvl1_size, input_size=config.input_size,
@@ -222,6 +222,8 @@ def train(config):
     
     final_model_name = config.results_dir + '/finalmodel_' + tmp_name +  '.pt'
     copyfile(best_model_name, final_model_name)
+    
+    
     
     
     res_dir =  config.results_dir + '/results_' + tmp_name

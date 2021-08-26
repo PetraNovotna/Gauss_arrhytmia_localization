@@ -19,10 +19,10 @@ class Config:
         
     
 
-    mil_solution = 'max'
-    # mil_solution = 'att2'
+    # mil_solution = 'max'
+    mil_solution = 'att2-lenmul'
     
-    # gaussian_sigma = 30   
+    # gaussian_sigma = 30  
     gaussian_sigma = 'mil'
     
     
@@ -108,10 +108,10 @@ class Config:
     input_size = 12
     output_size = 2
     # convs_in_layer = 5
-    convs_in_layer = 2
+    convs_in_layer = 5
     init_conv = lvl1_size
     filter_size = 5
     # filter_size = 3
-    blocks_in_lvl = 4
-
+    # blocks_in_lvl = 4
+    blocks_in_lvl = 1
 
